@@ -1,12 +1,11 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from typing import List
-import json
 import os
+import json
 
 app = FastAPI()
 
-# Enable CORS to allow GET requests from any origin
+# Enable CORS (GET requests from any origin)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -14,14 +13,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Load student marks from JSON file
+# Load marks.json
 with open(os.path.join(os.path.dirname(__file__), "marks.json")) as f:
     data = json.load(f)
 
-# Convert to dictionary for faster lookup
-marks_dict = {student["name"]: student["marks"] for student in data}
+# Convert to dict for fast lookup
+marks_dict = {entry["name"]: entry["marks"] for entry in data}
 
-@app.get("/")
-async def get_marks(name: List[str] = []):
+@app.get("/api")
+def get_marks(name: list[str] = []):
     result = [marks_dict.get(n, None) for n in name]
     return {"marks": result}
